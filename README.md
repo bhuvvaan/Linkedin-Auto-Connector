@@ -71,7 +71,6 @@ This script automates the process of sending connection requests on LinkedIn bas
 3. Configure your LinkedIn credentials and settings in the `setup.ini` file:
     ```ini
     [LinkedIn]
-    li_at = YOUR_LI_AT_COOKIE_HERE
     email = YOUR_EMAIL_HERE
     password = YOUR_PASSWORD_HERE
     ```
