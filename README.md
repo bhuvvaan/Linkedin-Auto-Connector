@@ -1,4 +1,4 @@
-Credits- Ahmed Mujtaba - [Your LinkedIn Profile](https://www.linkedin.com/in/creative-programmer/)
+Credits- Ahmed Mujtaba - [Linkedin](https://www.linkedin.com/in/creative-programmer/)
 
 # LinkedIn Auto Connector
 
