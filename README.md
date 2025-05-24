@@ -1,6 +1,51 @@
-# LinkedIn Connection Automation Tool
+Credits- Ahmed Mujtaba - [Your LinkedIn Profile](https://www.linkedin.com/in/creative-programmer/)
 
-This repository contains a Python script to automate sending connection requests on LinkedIn using Selenium. It supports logging in with cookies or credentials, selecting location filters, and sending personalized connection requests. The tool is configurable via an `ini` file and uses color-coded console outputs for better readability.
+# LinkedIn Auto Connector
+
+This script automates the process of sending connection requests on LinkedIn based on search criteria.
+
+## Setup Instructions
+
+1. Make sure you have Python installed on your system.
+
+2. Install the required dependencies:
+   ```
+   pip install selenium webdriver-manager colorama
+   ```
+
+3. Configure your input parameters in `input_config.ini`:
+   - The first time you run the script, it will create a default `input_config.ini` file
+   - Edit this file with your search criteria and LinkedIn cookie
+
+4. Run the script:
+   ```
+   python main.py
+   ```
+
+## Configuration Options
+
+### SearchCriteria
+- `connection_degree`: The degree of connection (1st, 2nd, or 3rd)
+- `keyword`: Search keyword (e.g., "software engineer")
+- `location`: Location to filter results (e.g., "United States")
+- `limit`: Maximum number of connection requests to send
+
+### LinkedIn
+- `li_at`: Your LinkedIn authentication cookie value
+  - To get this, log in to LinkedIn in your browser
+  - Open browser developer tools (F12)
+  - Go to Application tab > Cookies > www.linkedin.com
+  - Find the "li_at" cookie and copy its value
+
+### Messages
+- `include_note`: Set to True to include a personalized note with connection requests (for 2nd and 3rd connections)
+- `connection_message`: The message to send with connection requests. Use {name} to include the recipient's first name
+- `message_letter`: Message for 1st connections (leave empty if not using)
+
+## Notes
+- The script will create a default `input_config.ini` file if one doesn't exist
+- Edit the configuration file with your preferences before running the script
+- The script uses cookies for authentication to avoid LinkedIn's login detection systems
 
 ## Features
 
@@ -31,14 +76,16 @@ This repository contains a Python script to automate sending connection requests
     password = YOUR_PASSWORD_HERE
     ```
 
+4. The script uses a more comprehensive `input_config.ini` file for configuration. Edit this file with your search criteria, LinkedIn credentials, and message templates.
+
 ## Usage
 
 1. Run the script:
     ```bash
-    python script.py
+    python main.py
     ```
 
-2. Follow the prompts to enter your search criteria and connection request details.
+2. Edit the `input_config.ini` file to configure your search criteria and connection request details.
 
 ## How to Get `li_at` LinkedIn Cookies
 
@@ -47,7 +94,7 @@ This repository contains a Python script to automate sending connection requests
 3. Go to the `Application` tab.
 4. In the left sidebar, under `Storage`, click on `Cookies` and then select `https://www.linkedin.com`.
 5. Look for the `li_at` cookie in the list.
-6. Copy the value of the `li_at` cookie and paste it into the `setup.ini` file under `[LinkedIn]`.
+6. Copy the value of the `li_at` cookie and paste it into the `input_config.ini` file under `[LinkedIn]`.
 
 ## Contributing
 
@@ -57,6 +104,3 @@ This repository contains a Python script to automate sending connection requests
 4. Push to the branch (`git push origin feature/AmazingFeature`).
 5. Open a pull request.
 
-## Contact
-
-Ahmed Mujtaba - [Your LinkedIn Profile](https://www.linkedin.com/in/creative-programmer/)
