@@ -30,13 +30,6 @@ This script automates the process of sending connection requests on LinkedIn bas
 - `location`: Location to filter results (e.g., "United States")
 - `limit`: Maximum number of connection requests to send
 
-### LinkedIn
-- `li_at`: Your LinkedIn authentication cookie value
-  - To get this, log in to LinkedIn in your browser
-  - Open browser developer tools (F12)
-  - Go to Application tab > Cookies > www.linkedin.com
-  - Find the "li_at" cookie and copy its value
-
 ### Messages
 - `include_note`: Set to True to include a personalized note with connection requests (for 2nd and 3rd connections)
 - `connection_message`: The message to send with connection requests. Use {name} to include the recipient's first name
