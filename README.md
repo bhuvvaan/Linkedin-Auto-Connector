@@ -95,11 +95,4 @@ This script automates the process of sending connection requests on LinkedIn bas
 5. Look for the `li_at` cookie in the list.
 6. Copy the value of the `li_at` cookie and paste it into the `input_config.ini` file under `[LinkedIn]`.
 
-## Contributing
-
-1. Fork the repository.
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`).
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
-4. Push to the branch (`git push origin feature/AmazingFeature`).
-5. Open a pull request.
 
