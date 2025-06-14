@@ -52,7 +52,7 @@ This script automates the process of sending connection requests on LinkedIn bas
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/ahmedmujtaba1/Linkedin-Auto-Connector.git
+    git clone https://github.com/bhuvvaan/Linkedin-Auto-Connector.git
     cd Linkedin-Auto-Connector
     ```
 
