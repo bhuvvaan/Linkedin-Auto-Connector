@@ -10,12 +10,12 @@ This script automates the process of sending connection requests on LinkedIn bas
 
 2. Install the required dependencies:
    ```
-   pip install selenium webdriver-manager colorama
+   pip install -r requirements.txt
    ```
 
 3. Configure your input parameters in `input_config.ini`:
    - The first time you run the script, it will create a default `input_config.ini` file
-   - Edit this file with your search criteria and LinkedIn cookie
+   - Edit this file with your login details
 
 4. Run the script:
    ```
@@ -29,13 +29,6 @@ This script automates the process of sending connection requests on LinkedIn bas
 - `keyword`: Search keyword (e.g., "software engineer")
 - `location`: Location to filter results (e.g., "United States")
 - `limit`: Maximum number of connection requests to send
-
-### LinkedIn
-- `li_at`: Your LinkedIn authentication cookie value
-  - To get this, log in to LinkedIn in your browser
-  - Open browser developer tools (F12)
-  - Go to Application tab > Cookies > www.linkedin.com
-  - Find the "li_at" cookie and copy its value
 
 ### Messages
 - `include_note`: Set to True to include a personalized note with connection requests (for 2nd and 3rd connections)
@@ -71,7 +64,6 @@ This script automates the process of sending connection requests on LinkedIn bas
 3. Configure your LinkedIn credentials and settings in the `setup.ini` file:
     ```ini
     [LinkedIn]
-    li_at = YOUR_LI_AT_COOKIE_HERE
     email = YOUR_EMAIL_HERE
     password = YOUR_PASSWORD_HERE
     ```
