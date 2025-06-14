@@ -13,6 +13,7 @@ from urllib.parse import quote
 import os
 import traceback
 import sys
+from selenium.webdriver.common.keys import Keys
 
 # Initialize colorama
 init(autoreset=True)
@@ -116,18 +117,44 @@ def select_location(driver:webdriver.Chrome, location:str):
         time.sleep(2)
         try:
             driver.find_element(By.XPATH,f"//*[text()='{location.title()}']").click()
+            # Close the dropdown suggestions
+            location_input.send_keys(Keys.ESCAPE)
         except:
             # Try alternative location selector if the first one fails
             location_options = driver.find_elements(By.XPATH, "//span[contains(@class, 'search-typeahead-v2__hit-info')]")
             if location_options:
                 location_options[0].click()
+                location_input.send_keys(Keys.ESCAPE)
             else:
                 print(Fore.YELLOW + f"[WARNING] Could not select location '{location}'. Continuing without location filter.")
                 driver.find_element(By.XPATH, "//button[@aria-label='Dismiss']").click()
                 return
                 
         time.sleep(1)
-        driver.find_element(By.XPATH,"//button[@aria-label='Apply current filter to show results']").click()
+        # First fallback: Use the text-based XPath for the 'Show Results' button
+        try:
+            show_results_button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((
+                    By.XPATH,
+                    "//button[(translate(@aria-label,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='show results') or span[translate(normalize-space(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='show results']]"
+                ))
+            )
+            driver.execute_script("arguments[0].click();", show_results_button)
+            print("[DEBUG] 'Show Results' button clicked using text-based XPath.")
+        except:
+            # Second fallback: Press Enter to apply the location filter
+            print("[DEBUG] 'Show Results' button not clickable, pressing Enter.")
+            location_input.send_keys(Keys.RETURN)
+            time.sleep(3)
+            
+            # Third fallback: Force-click the first 'Show Results' button
+            try:
+                show_results = driver.find_element(By.XPATH,
+                    "(//button[span[normalize-space()='Show results']])[1]")
+                driver.execute_script("arguments[0].click();", show_results)
+                print("[DEBUG] 'Show Results' button force-clicked.")
+            except Exception as e:
+                print(Fore.YELLOW + f"[WARNING] Could not force-click 'Show Results' button: {e}")
         time.sleep(3)
     except Exception as e:
         print(Fore.YELLOW + f"[WARNING] Error selecting location: {e}")
@@ -644,8 +671,20 @@ def main():
         connection_degree = input_config.get('SearchCriteria', 'connection_degree')
         keyword = input_config.get('SearchCriteria', 'keyword')
         location = input_config.get('SearchCriteria', 'location')
+        location_code_mapping = {
+            'united states': '103644278',
+            'india': '102713980',
+            'canada': '101174742',
+            'united kingdom': '102264111',
+            'australia': '102300403',
+            'germany': '101282230'  # Added Germany
+        }
+        location_code = location_code_mapping.get(location.lower(), '')
         limit = input_config.getint('SearchCriteria', 'limit')
         li_at = input_config.get('LinkedIn', 'li_at')
+        
+        # Get the actively_hiring parameter if it exists
+        actively_hiring = input_config.get('SearchCriteria', 'actively_hiring', fallback='Any job title')
         
         # Check for message options
         message_letter = ''
@@ -667,6 +706,8 @@ def main():
         print(Fore.MAGENTA + f"[+] Connection degree: {connection_degree}")
         print(Fore.MAGENTA + f"[+] Keyword: {keyword}")
         print(Fore.MAGENTA + f"[+] Location: {location}")
+        if actively_hiring:
+            print(Fore.MAGENTA + f"[+] Actively Hiring: {actively_hiring}")
         print(Fore.MAGENTA + f"[+] Maximum connection requests: {limit}")
         if connection_degree.lower() == '1st' and message_letter:
             print(Fore.MAGENTA + f"[+] Using message for 1st connections")
@@ -700,12 +741,34 @@ def main():
             print(Fore.YELLOW + f"[WARNING] Invalid connection degree '{connection_degree}'. Using default (2nd).")
             network_code = "%5B%22S%22%5D"
 
-        search_url = f"https://www.linkedin.com/search/results/people/?keywords={keyword.replace(' ','%20').lower()}&locations={location.replace(' ','%20')}&network={network_code}&origin=FACETED_SEARCH"
+        # Build the search URL
+        search_url = f"https://www.linkedin.com/search/results/people/?keywords={keyword.replace(' ','%20').lower()}"
+        
+        if location_code:
+            search_url += f"&geoUrn=%5B%22{location_code}%22%5D"
+        elif location:
+            search_url += f"&locations={location.replace(' ','%20')}"
+        
+        # Add network code
+        search_url += f"&network={network_code}"
+        
+        # Add actively hiring filter according to new LinkedIn URL pattern
+        if actively_hiring:
+            if actively_hiring.lower() in ['any job', 'any job title']:
+                # -100 is LinkedIn's internal code that represents "Any job title"
+                search_url += "&activelyHiringForJobTitles=%5B%22-100%22%5D"
+            else:
+                # Keep generic actively hiring flag and pass the text in the title parameter as before
+                search_url += "&facetActivelyHiring=true"
+                search_url += f"&title={actively_hiring.replace(' ','%20')}"
+        
+        search_url += "&origin=FACETED_SEARCH"
+        
         print(Fore.YELLOW + f"[INFO] Navigating to search URL: {search_url}")
         driver.get(search_url)
         WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "global-nav-typeahead")))
         
-        if location != "":
+        if location != "" and not location_code:
             select_location(driver, location)
             
         send_connection_request(driver=driver, limit=limit, letter=message, include_notes=include_note, message_letter=message_letter)
@@ -727,6 +790,7 @@ def create_default_input_config():
         'connection_degree': '2nd',
         'keyword': 'software engineer',
         'location': 'United States',
+        'actively_hiring': 'Any job title',
         'limit': '10'
     }
     
